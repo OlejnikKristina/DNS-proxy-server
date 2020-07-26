@@ -3,11 +3,14 @@
 import socket
 import yaml
 
+# import dns.name
+import dnslib
+
 MAX_DATAGRAM_LEN = 512
 DEAFAUL_PORT = 53
 DATAGRAM_SIZE = 41
 
-def isDomainInBlackList(domainName, blacklist, banMsg):
+def isDomainBlacked(domainName, blacklist, banMsg):
 	if domainName in blacklist:
 		print("\"", domainName, "\"", banMsg)
 		return True
@@ -26,7 +29,9 @@ def readSettings(domainName):
 	banMsg = config["banMsg"]
 	print("banMsg: ", banMsg)
 
-	isInBlackList(domainName, blacklist, banMsg)
+	if not isDomainBlacked(domainName, blacklist, banMsg):
+		print("Not in the black list")
+
 
 def getDomainName(datagram):
 	print(type(datagram), " len: ", len(datagram))
@@ -52,6 +57,7 @@ def acceptData():
 	socketUDP.sendto(datagram, address)
 	domainName = getDomainName(datagram)
 	readSettings(domainName)
+	response = dns.query.udp(datagram, '192.168.1.1')
 	socketUDP.close()
 
 def main():
