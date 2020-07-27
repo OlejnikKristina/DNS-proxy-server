@@ -13,9 +13,10 @@ def create_refuse_respond(conf):
 	# Decode a DNS packet
 	unpacked_datagram = DNSRecord.parse(conf.datagram)
 	response = unpacked_datagram.reply()
-	response.add_answer(RR("abc.com",QTYPE.A,rdata=A("1.2.3.4"),ttl=60))
+	print(conf.ban_msg, "  ", type(conf.ban_msg))
+	response.add_answer(RR(conf.ban_msg.encode('UTF-8'), QTYPE.A, rdata=A("1.2.3.4"), ttl = 42))
 	print(response)
-	return conf.datagram
+	return DNSRecord.pack(response)
 
 def send_dns_query(conf):
 	sending_address = (conf.superior_dns_server, DEAFAUL_PORT)
